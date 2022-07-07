@@ -1,0 +1,308 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+
+
+/* MY CSS */
+
+*{
+	box-sizing: border-box;
+}
+
+h1{
+	font-size: 40px;
+	font-weight: 700;
+	line-height: 60px;
+}
+
+h2{
+	font-size: 24px;
+	font-weight: 400;
+	line-height: 36px;
+}
+
+h3, a{
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 36px;
+}
+
+h4{
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
+}
+
+h5{
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 24px;
+}
+
+h6{
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 24px;
+	text-transform: uppercase;
+}
+
+button {
+	width: 100%;
+	height: 50px;
+	border: 2px solid transparent;
+	border-radius: 4px;
+	font-family: "poppins";
+	padding: 0;
+}
+
+body{
+	font-family: 'Poppins'
+}
+
+.main{
+	margin: 0 20px 0 20px;
+	max-width: 500px;
+	
+
+}
+
+.main__title{
+	margin-top: 33px;
+	margin-bottom: 33px;
+}
+
+.main__locator{
+	padding-top: 17px;
+}
+
+.main__notice{
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.main__dogs-container{
+  display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: auto;
+	gap:27px;
+	margin-bottom: 20px;
+}
+
+.main__dog-card-text{
+	position: relative;
+}
+
+.main__dog-card{
+	display: flex;
+	flex-direction: column;
+	height: 234px;
+	width: 335px;
+	border: 2px solid #000000;
+	border-radius: 8px;
+}
+
+.main__dog-name{
+	margin-left: 15px;
+}
+
+.main__dog-location{
+	margin-left: 17px;
+}
+
+.main__report-info{
+  position: absolute;
+	float: right;
+	top: 20px;
+	right: 20px;
+	width: 120px;
+	text-align: right;
+	text-decoration-line: underline;
+}
+
+.edit-mode-pen{
+	position: absolute;
+	float: right;
+	top: 20px;
+	right: 20px;
+}
+
+.main__boton-ubicacion{
+	background-color: #FF9DF5;
+	margin-top: 20px;
+}
+
+.main__report-info{
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 24px;
+	color: #3E91DD;
+	text-transform: uppercase;
+}
+      
+.main__form{
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	right: 20px;
+	left: 20px;
+	padding: 17px;
+	height: auto;
+	background-color: #000000;
+	color: white;
+	height: 600px;
+	margin-top: 33px;
+	max-width: 400px;
+}
+
+.main__form-cross{
+	float:right;
+	width:16px;
+	height:16px;
+}
+
+form input {
+	height: 50px;
+	width: 100%;
+
+}
+
+form textarea{
+	width: 100%;
+	height: 127px;
+}
+
+form input, form textarea{
+	border: 2px solid #000000;
+}
+
+form .submit-button{
+  margin-top: 20px;
+}
+
+/* session */
+
+.email__form, .datos__form, .password__form{
+	margin: 17px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.email__button{
+	margin-top: 30px;
+	background-color: #FF9DF5;
+	max-width: 335px;
+}
+
+.email__input, .datos__input, .password__input{
+	width: 100%;
+	max-width: 335px;
+  
+}
+
+/* datos */
+
+
+
+/* reportar */
+
+.reportar__section form{
+	margin-top: 13px;
+	margin-bottom: 20px;
+	padding-left: 17px;
+	padding-right: 17px;
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+}
+
+.mapbox-map{
+	width: 100%;
+	height: 208px;
+}
+
+.dropzone-previews{
+	background-image: url("./media/image7.png");
+	height: 142px;
+	width: auto;
+	overflow: hidden;
+}
+
+
+
+.reportar__form-button-agregar-foto{
+	background-color: #97EA9F;
+}
+
+/* .location-value{
+
+} */
+
+.reportar__input-container{
+  display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.reportar__form-button-location{
+	width: 75px;
+	background-color:#97EA9F;
+}
+
+.reportar__submit-button-container{
+	display: flex;
+	flex-direction: column;
+	gap: 17px;
+}
+
+.cancelar{
+	background-color:#ff8080;
+	;
+}
