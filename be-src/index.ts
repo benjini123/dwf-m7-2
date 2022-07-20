@@ -1,8 +1,9 @@
+import "dotenv/config";
+
 import * as express from "express";
 import * as cors from "cors";
 import * as path from "path";
 import * as bodyParser from "body-parser";
-import "dotenv/config";
 
 import { createUser, getUser, getUsers } from "./controllers/users-controller";
 import { createReport, getReports } from "./controllers/report-controller";
@@ -27,6 +28,8 @@ app.use(
 );
 
 app.use(express.json());
+app.use(express.json({ limit: "100mb" }));
+app.use(express.static("dist"));
 app.use(cors());
 
 //Get user
@@ -138,7 +141,10 @@ app.get("/me", authMiddleware, async (req, res, next) => {
   res.json({ token: "valido" });
 });
 
-// app.get("*", express.static(__dirname + "/public"));
+app.use(express.static(path.resolve(__dirname, "../../dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../../dist/index.html"));
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);

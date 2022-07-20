@@ -9,7 +9,6 @@ export function getSHA256ofString(text: string) {
 
 export async function createToken(email: string, password: string) {
   const passwordHasheado = getSHA256ofString(password);
-  console.log(passwordHasheado, email);
 
   const auth: any = await Auth.findOne({
     where: { email, password: passwordHasheado },

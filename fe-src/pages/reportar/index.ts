@@ -2,7 +2,7 @@ import "dotenv/config";
 import "mapbox-gl/dist/mapbox-gl.css";
 import * as mapboxgl from "mapbox-gl";
 import Dropzone from "dropzone";
-import { state, mode } from "../../state";
+import { state } from "../../state";
 import { Router } from "@vaadin/router";
 
 const MapboxClient = require("mapbox");

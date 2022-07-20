@@ -1,4 +1,4 @@
-import { sequelize } from "./db/sequelize";
+import { sequelize } from "./models/conn";
 import "./models";
 
 // sequelize
