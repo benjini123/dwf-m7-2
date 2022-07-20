@@ -1,8 +1,7 @@
 {
-  "name": "algolia",
+  "name": "desafio-final-m7",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "description": "",
   "scripts": {
     "dev:fe": "parcel serve ./fe-src/index.html",
     "build:fe": "parcel build ./fe-src/index.html --dist-dir ./dist",
