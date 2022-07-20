@@ -1,6 +1,6 @@
 import { User } from "./user";
 import { Auth } from "./auth";
-import { Pet } from "./Pet";
+import { Pet } from "./pet";
 import { Report } from "./report";
 
 Auth.belongsTo(User);
