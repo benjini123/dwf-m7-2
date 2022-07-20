@@ -92,7 +92,7 @@ h6{
 	text-transform: uppercase;
 }
 
-button {
+.button {
 	width: 100%;
 	height: 50px;
 	border: 2px solid transparent;
@@ -105,25 +105,100 @@ body{
 	font-family: 'Poppins'
 }
 
+/* home page */
+
 .main{
 	margin: 0 20px 0 20px;
 	max-width: 500px;
+}
+
+.main__home{
+	overflow-x: hidden;
+	position: relative;
+	height: auto;
+}
+
+#maphome{
+	position: absolute; 
+	top: 88; 
+	bottom: 0; 
+	width: 100%; 
+	/* height: 400px */
+}
+
+.mapboxgl-control-container .mapboxgl-ctrl-top-right{
+ right:  20;
+
+ top: initial;
+ bottom: 100;
+}
+
+.mapboxgl-control-container .mapboxgl-ctrl-top-right .mapboxgl-ctrl{
+	/* float: none; */
+	height: 50px;
+	width: 50px;
+}
+
+.mapboxgl-ctrl-group button.mapboxgl-ctrl-geolocate{
+	width: 100%;
+	height: 100%;
+	content: "start";
+}
+
+div.mapboxgl-ctrl button.mapboxgl-ctrl-geolocate .mapboxgl-ctrl-icon{
+	/* background-image: none; */
 	
+	width: 100%;
 
 }
+
+
+.popup-styling.mapboxgl-popup .mapboxgl-popup-content {
+ width: auto;
+ display: flex;
+ flex-direction: row;
+ gap: 20px;
+}
+
+
 
 .main__title{
-	margin-top: 33px;
+	font-size: 60px;
+	margin-top: 66px;
 	margin-bottom: 33px;
+	text-shadow: 3px 4px 7px rgba(81,67,21,0.8);
+	position: fixed;
+	left: 40;
+	z-index: 2;
+	color: white;
+  mix-blend-mode: difference;
 }
 
-.main__locator{
-	padding-top: 17px;
+.main__title.open{
+	left: -350px;
+	-webkit-transition: left 2.6s ease;
+	-moz-transition: left 2.6s ease;
+	transition: left 2.6s ease;
 }
 
 .main__notice{
+	font-size: 18px;
 	text-align: center;
 	text-transform: uppercase;
+	color:white;
+  mix-blend-mode:difference;
+	position: fixed;	
+	z-index: 2;
+	right: 60;
+  width: 250px;
+	bottom: 115;
+}
+
+.main__notice.open{
+	right: -400;
+	-webkit-transition: right 2.6s ease;
+	-moz-transition: right 2.6s ease;
+	transition: right 2.6s ease; 
 }
 
 .main__dogs-container{
@@ -135,8 +210,13 @@ body{
 	margin-bottom: 20px;
 }
 
-.main__dog-card-text{
-	position: relative;
+@keyframes open-animation {
+	from{
+		transform: translateY(100%)
+	}
+	to{
+		transform: translateY(0%);
+	}
 }
 
 .main__dog-card{
@@ -144,12 +224,42 @@ body{
 	flex-direction: column;
 	height: 234px;
 	width: 335px;
-	border: 2px solid #000000;
-	border-radius: 8px;
+	border: 3px solid #161616;
+	border-radius: 7px;
+	position: fixed;
+	z-index: 3;
+	bottom: 30px;
+	left: 40px;
+	background-color: white;
+	animation: open-animation .5s ease;
+}
+
+
+.main__dog-card.close{
+	bottom: -270px;
+	-webkit-transition: bottom 0.4s ease;
+	-moz-transition: bottom 0.4s ease;
+	transition: bottom 0.4s ease; 
+}
+
+.card__pet-image{
+	height: 147px;
+	overflow:hidden;
+}
+
+.main__dog-card-text{
+	position: relative;
+  /* overflow: hidden; */
+	height: 30%;
 }
 
 .main__dog-name{
+	font-size: 30px;
+	overflow: hidden;
 	margin-left: 15px;
+	text-overflow: clip;
+	width: 200px;
+	height: 50px;
 }
 
 .main__dog-location{
@@ -173,11 +283,6 @@ body{
 	right: 20px;
 }
 
-.main__boton-ubicacion{
-	background-color: #FF9DF5;
-	margin-top: 20px;
-}
-
 .main__report-info{
 	font-size: 16px;
 	font-weight: 500;
@@ -186,70 +291,73 @@ body{
 	text-transform: uppercase;
 }
       
-.main__form{
-	display: flex;
-	flex-direction: column;
-	position: absolute;
-	right: 20px;
-	left: 20px;
-	padding: 17px;
-	height: auto;
-	background-color: #000000;
-	color: white;
-	height: 600px;
-	margin-top: 33px;
-	max-width: 400px;
-}
-
-.main__form-cross{
-	float:right;
-	width:16px;
-	height:16px;
-}
-
-form input {
-	height: 50px;
-	width: 100%;
-
-}
-
-form textarea{
-	width: 100%;
-	height: 127px;
-}
-
-form input, form textarea{
-	border: 2px solid #000000;
-}
-
-form .submit-button{
-  margin-top: 20px;
-}
-
 /* session */
 
 .email__form, .datos__form, .password__form{
-	margin: 17px;
+	margin: 20px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	gap: 30px;
 }
 
-.email__button{
+.email__form-data, .password__form-data{
+	max-width: 450px;
+	margin: 0;
+	width: 100%;
+}
+
+.datos__form div{
+	width: 100%;
+	max-width: 600px;
+
+}
+
+.datos__input-contras{
+  display: flex;
+	flex-direction: column;
+	gap:10px;
+}
+
+.email__button, .password__button{
 	margin-top: 30px;
 	background-color: #FF9DF5;
-	max-width: 335px;
+	max-width: 600px;
 }
 
-.email__input, .datos__input, .password__input{
+.email__input, .datos__input, .password__input, .nombre__input, .ubicacion__input{
 	width: 100%;
-	max-width: 335px;
-  
+	border: 2px solid #000000;
+	border-radius: 5px;
+	height: 50px;
 }
 
 /* datos */
 
+.datos__container{
+	max-width: 500px;
+	margin: auto;
+	padding-top:20px;
+}
 
+/* password */
+
+.password__form{
+	max-width: 450px;
+	border: none;
+}
+
+@media (min-width:480px) {
+	.password__form{
+		margin: auto;
+		margin-top: 20px;
+	}
+	
+}
+
+.password__input-div{
+	width: 100%;
+}
 
 /* reportar */
 
@@ -263,6 +371,12 @@ form .submit-button{
 	gap: 25px;
 }
 
+@media (min-width:420px) {
+	.reportar__section form{
+		margin-top: 50px;
+  }
+}
+
 .mapbox-map{
 	width: 100%;
 	height: 208px;
@@ -270,20 +384,63 @@ form .submit-button{
 
 .dropzone-previews{
 	background-image: url("./media/image7.png");
-	height: 142px;
+	background-size: 100% 100%;
+	height: 180px;
 	width: auto;
 	overflow: hidden;
 }
 
+/* REPORTADAS */
 
+#no-reportadas{
+	padding-left: 30px;
+}
+
+@media (min-width:420px) {
+#no-reportadas{
+	font-size: 32px;
+	margin-top: 200px;
+}}
+
+#mascotas-section{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 30px;
+	gap: 20px;
+	width: 336px;
+	margin: auto
+}
+
+@media (min-width:800px) {
+	#mascotas-section{
+		padding: 100px 30px 0px 30px;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		width: 1128px;
+		grid-gap: 40px;
+	}
+}
+
+.card-container{
+	width: 336px;
+}
+
+.edit-mode-pen{
+	margin-top: 5px;
+	width: 30px;
+}
+
+/* reportar */
+
+.reportar__section{
+	max-width: 500px;
+	margin: auto;
+}
 
 .reportar__form-button-agregar-foto{
 	background-color: #97EA9F;
 }
-
-/* .location-value{
-
-} */
 
 .reportar__input-container{
   display: flex;
@@ -300,6 +457,13 @@ form .submit-button{
 	display: flex;
 	flex-direction: column;
 	gap: 17px;
+}
+
+.reportar__despublicar{
+	width: 100%;
+	text-align: center;
+	text-decoration: underline;
+	color: #FF3A3A
 }
 
 .cancelar{

@@ -1,17 +1,23 @@
 import * as express from "express";
-import * as crypto from "crypto";
-import * as jwt from "jsonwebtoken";
 import * as cors from "cors";
 import * as path from "path";
 import * as bodyParser from "body-parser";
+import "dotenv/config";
 
-import { index } from "./lib/algolia";
-import { Pet, User, Auth, Report } from "./models/index";
-import { createUser, getUser } from "./controllers/users-controller";
+import { createUser, getUser, getUsers } from "./controllers/users-controller";
+import { createReport, getReports } from "./controllers/report-controller";
 import { createToken } from "./controllers/auth-controller";
-import { createPet } from "./controllers/pets-controller";
+import { authMiddleware, reqBody } from "./controllers/authentication";
+import {
+  getGeoPets,
+  createPet,
+  getPets,
+  getUserPets,
+  deletePet,
+  updatePet,
+} from "./controllers/pets-controller";
 
-const port = process.env.PORT;
+const port = process.env.PORT || 5656;
 const app = express();
 
 app.use(
@@ -23,53 +29,44 @@ app.use(
 app.use(express.json());
 app.use(cors());
 
-//get user
-app.post("/users", async (req, res) => {
-  const { email } = req.body;
+//Get user
+app.get("/user/:email", async (req, res) => {
+  const { email } = req.params;
 
-  const user = await getUser(email).catch((err) => {
-    res.json(err.message);
-  });
+  const userId = await getUser(email);
 
-  res.json(user);
+  res.json(userId);
 });
 
-//get users
+//Get users
 app.get("/users", async (req, res) => {
-  const users = await User.findAll();
-
+  const users = await getUsers();
   res.json(users);
 });
 
-//create User
-app.post("/auth", async (req, res) => {
+//Sign up
+app.post("/auth", reqBody, async (req, res) => {
   const { name, password, email } = req.body;
 
-  const user = await createUser(name, password, email).catch((err) => {
-    console.log("fallo el crear usuario", err.message);
-    res.json(err.message);
-  });
+  const auth = await createUser(name, password, email);
 
-  res.json(user);
+  res.json(auth);
 });
 
-//sign in
-app.post("/auth/token", async (req, res) => {
+//Sign in
+app.post("/auth/token", reqBody, async (req, res) => {
   const { email, password } = req.body;
 
-  const token = await createToken(email, password).catch((err) => {
-    console.log({ error: err.message });
-    res.status(400).send();
-  });
+  const token = await createToken(email, password);
 
   res.json(token);
 });
 
-//post pet with geoloc
-app.post("/mascotas", async (req, res) => {
+//Post pet with geoloc
+app.post("/mascotas", reqBody, authMiddleware, async (req, res) => {
   const { latitud, longitud } = req.body;
+
   if (latitud && longitud) {
-    console.log("llego el pet correctamente" + latitud + longitud);
     const pet = await createPet(req.body);
     res.json(pet);
   } else {
@@ -79,45 +76,63 @@ app.post("/mascotas", async (req, res) => {
   }
 });
 
-app.get("/mascotas", async (req, res) => {
-  const mascotas = await Pet.findAll();
+//Update pet
+app.patch(
+  "/mascotas/editar/:petId",
+  authMiddleware,
+  reqBody,
+  async (req, res) => {
+    const { petId } = req.params;
+
+    const pet = await updatePet(req.body, petId);
+    res.json(pet);
+  }
+);
+
+//Get Pets
+app.get("/mascotas", authMiddleware, async (req, res) => {
+  const mascotas = await getPets();
+
   res.json(mascotas);
 });
 
-app.get("/mascotas/reportadas", async (req, res) => {
-  const { email } = req.body;
-  const user = await User.findOne({ where: { email } });
-  const mascotas = await Pet.findOne({
-    where: { user_id: user.get("user_id") },
-  });
-  res.json(mascotas);
+//get Pet by ID
+app.get("/mascotas/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  const reportadas = await getUserPets(userId);
+
+  res.json(reportadas);
 });
 
-app.get("/auth", async (req, res) => {
-  const auth = await Auth.findAll();
-  res.json(auth);
-});
-
+//Get Pets near location
 app.get("/mascotas-cerca-de", async (req, res) => {
   const { lat, lng } = req.query;
-  const { hits } = await index.search("", {
-    aroundLatLng: [lat, lng].join(","),
-    aroundRadius: 10000,
-  });
-
-  res.json(hits);
+  const petsByLoc = await getGeoPets(lat, lng);
+  res.json(petsByLoc);
 });
 
-//authorization
-function authMiddleware(req, res, next) {
-  const token = req.headers.authorization.split(" ")[1];
-  try {
-    const data = jwt.verify(token, process.env.SECRET);
-    next();
-  } catch (e) {
-    res.status(401).json({ error: "not allowed" });
-  }
-}
+//Delete Pet
+app.delete("/mascotas/:petId", authMiddleware, async (req, res) => {
+  const { petId } = req.params;
+
+  const mascotas = await deletePet(petId);
+
+  res.status(200).json({ success: "pet successfully removed from database" });
+});
+
+//Create Report
+app.post("/report", reqBody, authMiddleware, async (req, res) => {
+  const reportadas = await createReport(req.body);
+
+  res.json(reportadas);
+});
+
+app.get("/reports/:userId", authMiddleware, async (req, res) => {
+  const { userId } = req.params;
+  const reports = await getReports(userId);
+  res.json(reports);
+});
 
 app.get("/me", authMiddleware, async (req, res, next) => {
   res.json({ token: "valido" });

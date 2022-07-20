@@ -14,23 +14,29 @@ customElements.define(
     addListeners() {
       const formEl = this.querySelector(".email__form") as any;
 
-      formEl.addEventListener("submit", (e: any) => {
+      formEl.addEventListener("submit", async (e: any) => {
         e.preventDefault();
+
         const email: string = e.target.email.value;
 
-        state.getUser(email);
+        const userExists = (await state.getUser(email)) as any;
+        if (userExists === false) {
+          Router.go("/datos");
+        } else {
+          Router.go("/password");
+        }
       });
     }
     render() {
       this.innerHTML = `
       <nav-comp></nav-comp>
-      <h1 style="padding:20px">Ingresar</h1>
       <form class="email__form">
-        <div class="email__input">
+        <div class="email__form-data">
+          <h1 style="padding:20px">Ingresar</h1>
           <label for="email"><h6>email:</h6></label>
-          <input type="email" name="email"/>
+          <input class="email__input" type="email" name="email"/>
+          <button type="submit" class="email__button button"><h5>ingresar</h5></button>
         </div>  
-        <button type="submit" class="email__button"><h5>ingresar</h5></button>
       </form>
       
       `;

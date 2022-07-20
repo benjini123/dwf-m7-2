@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev:be": "nodemon --watch 'be-src/**/*' -e ts --exec 'ts-node ./be-src/index.ts' ",
-    "dev:fe": "parcel serve ./fe-src/index.html ",
+    "dev:fe": "parcel serve ./fe-src/index.html",
     "build:be": "tsc ./be-src",
     "start": "node ./be-dist/index.ts",
     "build": "yarn run build:be && yarn run build:fe",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@parcel/transformer-image": "^2.6.2",
+    "@sendgrid/mail": "^7.7.0",
     "@types/node": "^18.0.3",
     "@vaadin/router": "^1.7.4",
     "algolia": "^0.0.0",

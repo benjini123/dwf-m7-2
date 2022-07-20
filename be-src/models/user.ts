@@ -7,7 +7,6 @@ User.init(
     email: DataTypes.STRING,
     name: DataTypes.STRING,
     // bio: DataTypes.STRING,
-    // url: DataTypes.STRING,
   },
   {
     sequelize,

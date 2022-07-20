@@ -1,10 +1,12 @@
-import { state } from "../../state";
-import Dropzone from "dropzone";
 import "dotenv/config";
+import "mapbox-gl/dist/mapbox-gl.css";
+import * as mapboxgl from "mapbox-gl";
+import Dropzone from "dropzone";
+import { state, mode } from "../../state";
+import { Router } from "@vaadin/router";
+
 const MapboxClient = require("mapbox");
 const mapboxClient = new MapboxClient(process.env.MAPBOX_TOKEN);
-import * as mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 
 customElements.define(
   "reportar-page",
@@ -17,30 +19,48 @@ customElements.define(
     }
 
     render() {
+      let editMode: boolean = true;
+
+      const cs = state.getState();
+      if (cs.mode === "report") {
+        editMode = false;
+      }
+
       this.innerHTML = `
       <nav-comp></nav-comp>
       <section class="reportar__section">
         <form class="dropzone" id="upload-form">
-          <h1>Reportar mascota perdida</h1>
+          <h1>${editMode ? "Editar" : "Reportar"} mascota perdida</h1>
           <div>
             <label for="nombre"><h6>nombre</h6></label>
-            <input name="nombre" class="reportar__input-nombre">
+            <input name="nombre" class="reportar__input-nombre nombre__input" placeholder=${
+              editMode ? cs.pet.name : ""
+            }>
           </div>
           
-          <button type="button" class="dropzone-previews" ></button>
-          <button type="button" id="my-dropzone" class="reportar__form-button-agregar-foto">agregar/modificar foto</button>
+          <button type="button" class="dropzone-previews button" ></button>
+          <button type="button" id="my-dropzone" class="reportar__form-button-agregar-foto button">agregar/modificar foto</button>
           <div id="map" class="mapbox-map"></div>
           <div>
             <label for="q"><h6>ubicacion</h6></label>
             <div class="reportar__input-container">
-              <input name="q" class="location-value" type="search" />
-              <button type="button" class="reportar__form-button-location">go</button>
+              <input name="location" class="location-value ubicacion__input" type="search" placeholder=${
+                editMode ? cs.pet.location : ""
+              }>
+              <button type="button" class="reportar__form-button-location button">go</button>
             </div>
           </div>
           <h6>Buscá un punto de referencia para reportar a tu mascota. Puede ser una dirección, un barrio o una ciudad.</h6>
           <div class="reportar__submit-button-container">
-            <button><h5>Reportar como perdida</h5></button>
-            <button class="cancelar"><h5>Cancelar</h5></button>
+            <button type="submit" class="button"><h5>${
+              editMode ? "Guardar" : "Reportar como perdida"
+            }</h5></button>
+            <button type="click" class="cancelar button"><h5>${
+              editMode ? "Reportar como encontrado" : "cancelar"
+            }</h5></button>
+            <a class="reportar__despublicar" style="display:${
+              editMode ? "initial" : "none"
+            }"><h6>Despublicar</h6></a>
           </div>
         </form>
       </section>
@@ -51,12 +71,16 @@ customElements.define(
       const map = document.getElementById("map") as any;
       const form = document.querySelector("#upload-form") as any;
       const input = document.querySelector(".location-value") as any;
-      const btnLocation = document.querySelector(
+      const despublicarEl = document.querySelector(
+        ".reportar__despublicar"
+      ) as any;
+      const btnLocationEl = document.querySelector(
         ".reportar__form-button-location"
       ) as any;
-      let data;
-      let longitud;
-      let latitud;
+
+      let data: any;
+      let longitud: any;
+      let latitud: any;
 
       function initDropzone() {
         Dropzone.autoDiscover = false;
@@ -70,7 +94,6 @@ customElements.define(
 
         myDropzone.on("thumbnail", function (file) {
           data = file.dataURL;
-          console.log(data);
         });
 
         myDropzone.on("maxfilesexceeded", function (file) {
@@ -91,18 +114,50 @@ customElements.define(
         });
       }
 
-      function initSearchForm(callback) {
-        form.addEventListener("submit", (e: any) => {
+      function initListeners(callback) {
+        form.addEventListener("submit", async (e: any) => {
           e.preventDefault();
           e.stopPropagation();
 
           const nombre = e.target.nombre.value as any;
+          const location = e.target.location.value as any;
 
-          const pet = state.addPet({ latitud, longitud, nombre });
-          console.log(pet);
+          if (!nombre || !location) {
+            alert(
+              "tiene que ingresar un nombre y una direccion para continuar"
+            );
+          } else {
+            let pet: object = {
+              nombre,
+              latitud,
+              longitud,
+              url: data,
+              location,
+              userId: cs.userId,
+            };
+
+            if (!editMode) {
+              const petRes = await state.addPet(pet);
+              console.log({ newPet: petRes });
+
+              Router.go("/mascotas");
+            } else {
+              const petRes = await state.modifyPet(pet);
+              console.log({ modified: petRes });
+
+              Router.go("/mascotas");
+            }
+          }
         });
 
-        btnLocation.addEventListener("click", (e: any) => {
+        despublicarEl.addEventListener("click", async (e: any) => {
+          e.preventDefault();
+
+          await state.removeLostPet(cs.pet.id);
+          Router.go("/mascotas");
+        });
+
+        btnLocationEl.addEventListener("click", (e: any) => {
           e.preventDefault();
           e.stopPropagation();
 
@@ -124,7 +179,7 @@ customElements.define(
         initDropzone();
         const map = initMap();
 
-        initSearchForm(function (results) {
+        initListeners(function (results) {
           const firstResult = results[0];
 
           const marker = new mapboxgl.Marker()

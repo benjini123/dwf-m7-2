@@ -6,8 +6,7 @@ Report.init(
   {
     name: DataTypes.STRING,
     info: DataTypes.STRING,
-    phone: DataTypes.INTEGER,
-    url: DataTypes.STRING,
+    phone: DataTypes.BIGINT,
   },
   {
     sequelize,

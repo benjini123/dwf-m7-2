@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import exp = require("constants");
 import "dotenv/config";
 
 cloudinary.config({
@@ -7,13 +8,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function uploadToCloudinary(photo) {
-  cloudinary.uploader
-    .upload(photo)
-    .then(() => {
-      console.log("all good!");
-    })
-    .catch((err) => {
-      throw err.message;
-    });
-}
+export { cloudinary };
+
+// export async function uploadToCloudinary(photo) {
+//   cloudinary.uploader
+//     .upload(photo, {
+//       resource_type: "image",
+//       discard_original_filename: true,
+//       width: 1000,
+//     })
+//     .then(() => {
+//       console.log("all good!");
+//     })
+//     .catch((err) => {
+//       throw err.message;
+//     });
+// }

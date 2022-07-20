@@ -9,33 +9,35 @@ customElements.define(
     }
     connectedCallback() {
       this.render();
-      this.addListeners();
     }
-    addListeners() {}
+
     render() {
       this.innerHTML = `
+
       <nav-comp></nav-comp>
       <section id="mascotas-section">
-        <h6 id="no-reportadas">Aun no reportaste mascotas perdidas</h6>
       </section>
+      <h6 style="display:none" id="no-reportadas">Aun no reportaste mascotas perdidas</h6>
       
     `;
 
-      this.className = "password__container";
+      this.className = "pet__container";
 
       const mascotasCont = document.getElementById("mascotas-section") as any;
 
-      const cs = state.getState();
-
-      if (cs.reportadas) {
-        const h6El = document.getElementById("no-reportadas") as any;
-        h6El.style.display = "none";
-        cs.reportadas.forEach((pet) => {
-          const div = document.createElement("div");
-          div.innerHTML = `<lost-pet-card class="main__dog-card" location="${pet.latitud}" name="${pet.nombre}" pet-id="${pet.id}" edit><lost-pet-card>`;
-          mascotasCont.appendChild(div);
-        });
-      }
+      state.appendPets().then((res: any) => {
+        if (res.length >= 1) {
+          res.forEach((pet) => {
+            const div = document.createElement("div");
+            div.innerHTML = `<lost-pet-card class=" main__dog-card" location="${pet.location}" name="${pet.name}" pet-id="${pet.id}" src="${pet.url}" edit><lost-pet-card>`;
+            div.className = "card-container";
+            mascotasCont.appendChild(div);
+          });
+        } else {
+          const h6 = this.querySelector("#no-reportadas") as any;
+          h6.style.display = "initial";
+        }
+      });
     }
   }
 );

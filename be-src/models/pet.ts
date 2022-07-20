@@ -8,6 +8,8 @@ Pet.init(
     state: DataTypes.STRING,
     lat: DataTypes.FLOAT,
     lng: DataTypes.FLOAT,
+    url: DataTypes.STRING,
+    location: DataTypes.STRING,
   },
   {
     sequelize,

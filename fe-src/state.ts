@@ -1,7 +1,8 @@
+const API_BASE_URL = process.env.API_BASE_URL || "http://localhost:5656";
+export type mode = "edit" | "report";
+
 export const state = {
-  data: {
-    reportadas: [],
-  },
+  data: {},
   listeners: [],
 
   init() {
@@ -16,40 +17,80 @@ export const state = {
   async getUser(email: string) {
     const cs = state.getState();
     cs.email = email;
-    state.setState(cs);
 
-    const userRes = await fetch("http://localhost:5656/users", {
-      method: "POST",
-      body: JSON.stringify({ email }),
+    const userRes = await fetch(API_BASE_URL + "/user/" + email, {
+      method: "get",
       headers: { "Content-Type": "application/json" },
     });
 
     const userResData = await userRes.json();
-  },
 
-  async addPet(pet: Object) {
-    const petRes = await fetch("http://localhost:5656/mascotas", {
-      method: "POST",
-      body: JSON.stringify(pet),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (petRes.ok) {
-      const cs = this.getState();
-      if (cs.reportadas) {
-        cs.reportadas.push(pet);
-        this.setState(cs);
-      } else {
-        cs.reportadas = [];
-        cs.reportadas.push(pet);
-        console.log(cs.reportadas);
-        this.setState(cs);
-      }
-    } else {
-      return new Error("no se pudo agregar tu mascota");
+    if (userResData.userId) {
+      cs.userId = userResData.userId;
+      console.log(userResData.userId);
     }
 
+    state.setState(cs);
+    return userResData;
+  },
+
+  async locatePets(latitude, longitude) {
+    const petsData = await fetch(
+      API_BASE_URL + "/mascotas-cerca-de?lat=" + latitude + "&lng=" + longitude,
+      { method: "get", headers: { "Content-Type": "application/json" } }
+    );
+    const petsDataRes = await petsData.json();
+    return petsDataRes;
+  },
+
+  async addPet(petData: any) {
+    const cs = state.getState();
+    const { token } = cs;
+
+    const petRes = await fetch(API_BASE_URL + "/mascotas", {
+      method: "POST",
+      body: JSON.stringify(petData),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${token}`,
+      },
+    });
+
     const petResData = await petRes.json();
+    return petResData;
+  },
+
+  async modifyPet(petData: any) {
+    const cs = state.getState();
+    console.log(petData);
+
+    const petRes = await fetch(API_BASE_URL + "/mascotas/editar/" + cs.pet.id, {
+      method: "PATCH",
+      body: JSON.stringify(petData),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${cs.token}`,
+      },
+    });
+    const petResData = await petRes.json();
+    return petResData;
+  },
+
+  async removeLostPet(petId) {
+    const cs = state.getState();
+    const { token } = cs;
+
+    const petRes = await fetch(API_BASE_URL + "/mascotas/" + petId, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${token}`,
+      },
+    });
+
+    const petResData = await petRes.json();
+    cs.pet = {};
+    state.setState(cs);
     return petResData;
   },
 
@@ -57,47 +98,37 @@ export const state = {
     const currentState = state.getState();
     const email = currentState.email;
 
-    const tokenData = await fetch("http://localhost:5656/auth/token", {
+    const tokenData = await fetch(API_BASE_URL + "/auth/token", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: { "Content-Type": "application/json" },
     });
 
-    try {
-      const tokenDataRes = await tokenData.json();
+    const tokenDataRes = await tokenData.json();
+    if (tokenDataRes === false) {
+      throw new Error("contraseña incorrecta");
+    } else {
       currentState.token = tokenDataRes;
       state.setState(currentState);
-      state.appendPets(email);
-
-      document.dispatchEvent(
-        new CustomEvent("sign", {
-          detail: {
-            email,
-          },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    } catch {
-      return new Error("no se pudo crear un token");
     }
   },
 
-  async appendPets(email: string) {
+  async appendPets() {
     const cs = state.getState();
-    const petsData = await fetch("http://localhost:5656/mascotas/reportadas", {
+    const { userId } = cs;
+
+    const petsData = await fetch(API_BASE_URL + "/mascotas/" + userId, {
       method: "get",
-      body: JSON.stringify({ email }),
       headers: { "Content-Type": "application/json" },
     });
 
     const petsDataRes = await petsData.json();
-    cs.reportadas = petsDataRes;
+    return petsDataRes;
   },
 
   async appendToken(password, email) {
     const cs = state.getState();
-    const data = await fetch("http://localhost:5656/auth/token", {
+    const data = await fetch(API_BASE_URL + "/auth/token", {
       method: "POST",
       body: JSON.stringify({ password, email }),
       headers: { "Content-Type": "application/json" },
@@ -115,7 +146,7 @@ export const state = {
   async signUp(name, password, email) {
     const cs = state.getState() as any;
 
-    const authRes = await fetch("http://localhost:5656/auth", {
+    const authRes = await fetch(API_BASE_URL + "/auth", {
       method: "POST",
       body: JSON.stringify({ name, password, email }),
       headers: { "Content-Type": "application/json" },
@@ -123,10 +154,8 @@ export const state = {
 
     try {
       const authResData = await authRes.json();
-      cs.name = authResData.name;
+      cs.userId = authResData;
       state.setState(cs);
-
-      state.appendToken(password, email);
 
       document.dispatchEvent(
         new CustomEvent("sign", {
@@ -138,8 +167,26 @@ export const state = {
         })
       );
     } catch {
-      return new Error("no se pudo autenticarse en el sistema");
+      window.alert("error al registrar el usuario");
     }
+  },
+
+  async createReport(petReportData) {
+    const cs = state.getState();
+    const { token } = cs;
+
+    const reportRes = await fetch(API_BASE_URL + "/report", {
+      method: "post",
+      body: JSON.stringify(petReportData),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${token}`,
+      },
+    });
+
+    const reportResData = await reportRes.json();
+
+    return reportResData;
   },
 
   getState() {

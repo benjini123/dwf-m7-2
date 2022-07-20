@@ -25,11 +25,13 @@ export function initNavbarComp() {
       addStyles() {
         const style = document.createElement("style");
         style.innerHTML = `
+
         .header {
           margin: 0 auto;
         }
         
         .respmenu {
+          z-index:4;
           box-sizing: border-box;
           display: flex;
           flex-direction: row;
@@ -41,10 +43,19 @@ export function initNavbarComp() {
           padding:20px;
           color: white;
         }
+
         .respmenu .header__logo-burguer, .respmenu .header__logo-vector {
           font-size: 48px;
           pointer-events: none;
         }
+
+        @media (min-width:800px) {
+          .respmenu .header__logo-burguer, .respmenu .header__logo-vector, .respmenu .header__checkbox-input{
+            display:none;
+          }
+
+        }
+
         .respmenu .header__logo-vector{
           position: absolute;
           right: 20px;
@@ -61,13 +72,24 @@ export function initNavbarComp() {
         .respmenu input[type="checkbox"]{
           opacity:0;
         }
-        
+
         .header__logo-burguer, .header__logo-paws, .header__logo-vector {
           height: 48px;
           width: 48px;
         }
+
         .respmenu nav {
           display: none;
+        }
+
+        @media (min-width:800px) {
+          .respmenu nav{
+            display:initial;
+            width:100%;
+          }
+          #session{
+            display:none
+          }
         }
         
         .respmenu input:checked ~ nav {
@@ -77,12 +99,30 @@ export function initNavbarComp() {
           width: 100%;
           align-content: center
         }
+
+        @media (min-width:800px){
+          .respmenu input:checked, .respmenu input:checked ~ nav   {
+            height:50px;
+          }
+          .respmenu input:checked ~ nav {
+            width: auto
+          }
+        }
+
         .respmenu input:checked ~ img {
           display: none;
         }
+
+        @media (min-width:800px){
+          .respmenu input:checked ~ .header__logo-paws {
+            display: initial;
+          }
+        }
+
         .header__container input[type="checkbox"] {
           opacity: 0;
         }
+
         nav ul{
           list-style: none;
           padding: 0;
@@ -95,6 +135,26 @@ export function initNavbarComp() {
           margin-bottom:90px;
           gap:20px
         }
+
+        @media (min-width:800px) {
+          nav ul {
+            flex-direction: row;
+            margin: 0;
+            width:600px;
+            height:50px;
+            float:right;
+            padding-right:50px;
+            color:black;
+            gap:30px;
+          }
+        }
+
+        .link h6{
+          text-decoration:underline;
+          color:#3737ec;
+        }
+
+
         .respmenu a {
           color: inherit;
           text-decoration: none;
@@ -109,6 +169,19 @@ export function initNavbarComp() {
       }
 
       sessionHandler() {
+        const sessionDiv = this.shadow.getElementById("session");
+
+        const currentState = state.getState();
+        if (currentState.token) {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            
+            <h2 class="nav__user-email">${currentState.email}<h2>
+            <a class="link"><h6>cerrar sesion</h6></a>
+  
+            `;
+          sessionDiv.appendChild(div);
+        }
         const opcionEl = [
           ...(this.shadow.querySelectorAll(".header__opciones") as any),
         ];
@@ -121,6 +194,7 @@ export function initNavbarComp() {
 
             const currentState = state.getState();
             currentState.src = e.target.getAttribute("src");
+            currentState.mode = "report";
             state.setState(currentState);
 
             if (currentState.email && currentState.token) {
@@ -138,32 +212,6 @@ export function initNavbarComp() {
         const sessionInfo = this.shadow.querySelector(
           ".header__session-info"
         ) as any;
-
-        document.addEventListener("sign", (e: any) => {
-          e.preventDefault();
-
-          const { email } = e.detail as any;
-          const currentState = state.getState() as any;
-          const src = currentState.src || "/home";
-
-          const div = document.createElement("div");
-          div.innerHTML = `
-          <h2>${email}<h2>
-          <a class="link"><h6>cerrar sesion</h6></a>
-          `;
-
-          const sessionClose = div.querySelector(".link") as any;
-          sessionClose.addEventListener("click", (e: any) => {
-            e.preventDefault();
-
-            div.remove();
-            state.setState({});
-          });
-
-          sessionInfo.appendChild(div);
-
-          Router.go(`${src}`);
-        });
       }
 
       render() {
@@ -178,23 +226,28 @@ export function initNavbarComp() {
             <nav>
               <img src="${vector}" class="header__logo-vector" />
               <ul>
+              <li>
+                <a class="header__opciones">
+                  <h3 src="/datos">mis datos</h3>
+                </a>
+              </li>
+              <li>
+                <a class="header__opciones">
+                  <h3 src="/home">mascotas cerca mio</h3>
+                </a>
+              </li>
                 <li>
-                  <a name="a" class="header__opciones">
-                    <h3 src="/datos">mis datos</h3
+                  <a class="header__opciones">
+                    <h3 src="/mascotas">mascotas reportadas</h3>
                   </a>
                 </li>
                 <li>
                   <a class="header__opciones">
-                    <h3 src="/mascotas">mis mascotas reportadas</h3>
-                  </a>
-                </li>
-                <li>
-                  <a name="c" class="header__opciones">
                     <h3 src="/reportar">reportar mascota</h3>
                   </a>
                 </li>
               </ul>
-              <div class="header__session-info">
+              <div id="session" >
               </div>
             </nav>
             </div>

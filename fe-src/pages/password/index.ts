@@ -18,19 +18,26 @@ customElements.define(
         e.preventDefault();
         const password = e.target.password.value as any;
 
-        state.signIn(password);
+        state
+          .signIn(password)
+          .then(() => {
+            Router.go("/home");
+          })
+          .catch((error) => {
+            window.alert(error.message);
+          });
       });
     }
     render() {
       this.innerHTML = `
       <nav-comp></nav-comp>
-      <h1 style="padding:20px">Ingresar</h1>
       <form class="password__form">
-        <div class="password__input">
-          <label for="password"><h6>contraseña:</h6></label>
-          <input type="password" name="password"/>
-        </div>  
-        <button type="submit" class="email__button"><h5>ingresar</h5></button>
+      <div class="password__form-data">
+        <h1 style="padding:20px">Ingresar</h1>
+        <label for="password"> <h6>contraseña:</h6> </label>
+        <input type="password" name="password" class="password__input"/>
+        <button type="submit" class="password__button button"><h5>ingresar</h5></button>
+      </div>  
       </form>
     `;
 

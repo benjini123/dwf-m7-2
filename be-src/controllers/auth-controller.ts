@@ -14,11 +14,11 @@ export async function createToken(email: string, password: string) {
   const auth: any = await Auth.findOne({
     where: { email, password: passwordHasheado },
   });
-  console.log({ auth });
-  const token = jwt.sign({ id: auth.get("user_id") }, process.env.SECRET);
+
   if (auth) {
+    const token = jwt.sign({ id: auth.get("user_id") }, process.env.SECRET);
     return token;
   } else {
-    throw "email or pass incorrect ";
+    return false;
   }
 }
