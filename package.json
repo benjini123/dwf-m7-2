@@ -7,7 +7,7 @@
     "build:fe": "parcel build ./fe-src/index.html --dist-dir ./dist",
     "dev:be": "nodemon --watch 'be-src/**/*' -e ts --exec 'ts-node ./be-src/index.ts' ",
     "build:be": "tsc",
-    "start": "node ./be-dist/be-src/index.ts",
+    "start": "node ./be-dist/be-src/index.js",
     "build": "yarn run build:be && yarn run build:fe",
     "sync": "ts-node ./be-src/sync.ts"
   },
