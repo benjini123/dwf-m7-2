@@ -16,7 +16,7 @@ export const state = {
 
   async getUser(email: string) {
     const cs = state.getState();
-    cs.email = email;
+    cs.user = { email };
 
     const userRes = await fetch(API_BASE_URL + "/user/" + email, {
       method: "get",
@@ -24,10 +24,11 @@ export const state = {
     });
 
     const userResData = await userRes.json();
+    console.log(userResData);
 
-    if (userResData.userId) {
-      cs.userId = userResData.userId;
-      console.log(userResData.userId);
+    if (userResData.id) {
+      cs.user.userId = userResData.id;
+      cs.user.name = userResData.name;
     }
 
     state.setState(cs);
@@ -62,10 +63,9 @@ export const state = {
 
   async modifyPet(petData: any) {
     const cs = state.getState();
-    console.log(petData);
 
     const petRes = await fetch(API_BASE_URL + "/mascotas/editar/" + cs.pet.id, {
-      method: "PATCH",
+      method: "put",
       body: JSON.stringify(petData),
       headers: {
         "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export const state = {
 
   async signIn(password) {
     const currentState = state.getState();
-    const email = currentState.email;
+    const { email } = currentState.user;
 
     const tokenData = await fetch(API_BASE_URL + "/auth/token", {
       method: "POST",
@@ -110,20 +110,55 @@ export const state = {
     } else {
       currentState.token = tokenDataRes;
       state.setState(currentState);
+      return tokenDataRes;
     }
   },
 
-  async appendPets() {
-    const cs = state.getState();
-    const { userId } = cs;
+  async signUp(name, password, email) {
+    const cs = state.getState() as any;
 
-    const petsData = await fetch(API_BASE_URL + "/mascotas/" + userId, {
-      method: "get",
+    const authRes = await fetch(API_BASE_URL + "/auth", {
+      method: "POST",
+      body: JSON.stringify({ name, password, email }),
       headers: { "Content-Type": "application/json" },
     });
 
-    const petsDataRes = await petsData.json();
-    return petsDataRes;
+    try {
+      const authResData = await authRes.json();
+      cs.user = { ...cs.user, userId: authResData, name, password };
+      state.setState(cs);
+
+      document.dispatchEvent(
+        new CustomEvent("sign", {
+          detail: {
+            email,
+          },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    } catch {
+      window.alert("error al registrar el usuario");
+    }
+  },
+
+  async updateUser(name, password, email) {
+    const cs = state.getState();
+    const { token } = cs;
+    const updateRes = await fetch(API_BASE_URL + "/user/update", {
+      method: "put",
+      body: JSON.stringify({ name, password, email }),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${token}`,
+      },
+    });
+
+    const updateResData = await updateRes.json();
+    cs.user.name = name;
+    state.setState(cs);
+
+    return true;
   },
 
   async appendToken(password, email) {
@@ -143,44 +178,25 @@ export const state = {
     }
   },
 
-  async signUp(name, password, email) {
-    const cs = state.getState() as any;
+  async appendPets() {
+    const cs = state.getState();
+    const { userId } = cs.user;
 
-    const authRes = await fetch(API_BASE_URL + "/auth", {
-      method: "POST",
-      body: JSON.stringify({ name, password, email }),
+    const petsData = await fetch(API_BASE_URL + "/mascotas/" + userId, {
+      method: "get",
       headers: { "Content-Type": "application/json" },
     });
 
-    try {
-      const authResData = await authRes.json();
-      cs.userId = authResData;
-      state.setState(cs);
-
-      document.dispatchEvent(
-        new CustomEvent("sign", {
-          detail: {
-            email,
-          },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    } catch {
-      window.alert("error al registrar el usuario");
-    }
+    const petsDataRes = await petsData.json();
+    return petsDataRes;
   },
 
   async createReport(petReportData) {
-    const cs = state.getState();
-    const { token } = cs;
-
     const reportRes = await fetch(API_BASE_URL + "/report", {
       method: "post",
       body: JSON.stringify(petReportData),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${token}`,
       },
     });
 

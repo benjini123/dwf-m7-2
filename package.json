@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "cleanup": "rm -rf .parcel-cache dist",
     "dev:fe": "parcel serve ./fe-src/index.html",
     "build:fe": "parcel build ./fe-src/index.html --dist-dir ./dist",
-    "dev:be": "nodemon --watch 'be-src/**/*' -e ts --exec 'ts-node ./be-src/index.ts' ",
+    "dev:be": "nodemon --watch './be-src/**/*' -e ts --exec 'ts-node ./be-src/index.ts' ",
     "build:be": "tsc",
     "start": "node ./be-dist/be-src/index.js",
     "build": "yarn run build:be && yarn run build:fe",

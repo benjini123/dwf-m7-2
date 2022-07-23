@@ -5,7 +5,12 @@ import * as cors from "cors";
 import * as path from "path";
 import * as bodyParser from "body-parser";
 
-import { createUser, getUser, getUsers } from "./controllers/users-controller";
+import {
+  createUser,
+  getUser,
+  getUsers,
+  updateUser,
+} from "./controllers/users-controller";
 import { createReport, getReports } from "./controllers/report-controller";
 import { createToken } from "./controllers/auth-controller";
 import { authMiddleware, reqBody } from "./controllers/authentication";
@@ -36,15 +41,21 @@ app.use(cors());
 app.get("/user/:email", async (req, res) => {
   const { email } = req.params;
 
-  const userId = await getUser(email);
+  const user = await getUser(email);
 
-  res.json(userId);
+  res.json(user);
 });
 
 //Get users
 app.get("/users", async (req, res) => {
   const users = await getUsers();
   res.json(users);
+});
+
+app.put("/user/update", reqBody, authMiddleware, async (req, res) => {
+  const { name, password, email } = req.body;
+  const updateRes = await updateUser(name, password, email);
+  res.json(updateRes);
 });
 
 //Sign up
@@ -80,7 +91,7 @@ app.post("/mascotas", reqBody, authMiddleware, async (req, res) => {
 });
 
 //Update pet
-app.patch(
+app.put(
   "/mascotas/editar/:petId",
   authMiddleware,
   reqBody,
@@ -125,25 +136,21 @@ app.delete("/mascotas/:petId", authMiddleware, async (req, res) => {
 });
 
 //Create Report
-app.post("/report", reqBody, authMiddleware, async (req, res) => {
-  const reportadas = await createReport(req.body);
+app.post("/report", reqBody, async (req, res) => {
+  const reportadas = await createReport(req.body).catch((err) => {
+    res.json(err.message);
+  });
 
   res.json(reportadas);
-});
-
-app.get("/reports/:userId", authMiddleware, async (req, res) => {
-  const { userId } = req.params;
-  const reports = await getReports(userId);
-  res.json(reports);
 });
 
 app.get("/me", authMiddleware, async (req, res, next) => {
   res.json({ token: "valido" });
 });
 
-app.use(express.static(path.resolve(__dirname, "../../dist")));
+app.use(express.static(path.resolve(__dirname, "../dist")));
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "../../dist/index.html"));
+  res.sendFile(path.resolve(__dirname, "../dist/index.html"));
 });
 
 app.listen(port, () => {

@@ -15,7 +15,7 @@ export async function createToken(email: string, password: string) {
   });
 
   if (auth) {
-    const token = jwt.sign({ id: auth.get("user_id") }, process.env.SECRET);
+    const token = jwt.sign({ id: auth.get("userId") }, process.env.SECRET);
     return token;
   } else {
     return false;

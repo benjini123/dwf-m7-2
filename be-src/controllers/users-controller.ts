@@ -8,46 +8,39 @@ export async function createUser(
   password: string,
   email: string
 ) {
-  if (!name) {
-    throw "you must insert a name";
-  }
-
-  const [userInstance, created] = await User.findOrCreate({
-    where: { email },
-    defaults: {
-      email,
-      name,
-    },
+  const userInstance = await User.create({
+    email,
+    name,
   });
 
   const userId = userInstance.get("id");
 
-  if (created) {
-    const [authInstance, authCreated] = await Auth.findOrCreate({
-      where: { userId: userInstance.get("id") },
-      defaults: {
-        email,
-        password: getSHA256ofString(password),
-        userId: userId,
-      },
-    });
-  } else {
-    const userUpdate = await User.upsert({ id: userId, email, name });
-    const authUpdate = await Auth.upsert({
-      id: userId,
-      email,
-      password: getSHA256ofString(password),
-    });
-  }
+  await Auth.create({
+    email,
+    password: getSHA256ofString(password),
+    userId: userId,
+  });
 
   return userId;
+}
+
+export async function updateUser(name, password, email) {
+  const user = await User.findOne({
+    where: { email },
+  });
+
+  await User.upsert({ id: user.get("id"), name });
+  await Auth.upsert({ userId: user.get("id"), password });
+
+  return true;
 }
 
 export async function getUser(email: string) {
   const user = await User.findOne({ where: { email } });
   if (user) {
-    const userId = user.get("id");
-    return { userId };
+    // const userId = user.get("id");
+
+    return user;
   } else {
     return false;
   }

@@ -62,6 +62,7 @@ export function initCardComp() {
             id: this.petId,
             name: this.name,
             location: this.location,
+            src: this.src,
           };
 
           state.setState(cs);

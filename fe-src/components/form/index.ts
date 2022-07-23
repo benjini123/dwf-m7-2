@@ -56,23 +56,20 @@ export function initFormComp() {
           display: flex;
           flex-direction: column;
           position: absolute;
-          right: 20px;
+
+          margin-left:auto;
+          margin-right:auto;
+
           left:20px;
+          right:20px;
+
           padding: 17px;
           height: auto;
           background-color: #000000;
           border-radius: 6px;
           color: white;
-          margin-top: 33px;
+          margin-top: 120px;
           max-width: 400px;
-        }
-
-        @media(min-width:420px){
-          .main__form{
-            left: 50%;
-            transform: translate(-50%, 0);
-
-          }
         }
 
         @keyframes close-animation {
@@ -184,6 +181,10 @@ export function initFormComp() {
 
           if (target.name.value && target.phone.value) {
             state.createReport(petReportData).then(() => {
+              console.log(
+                `Success! Report has been sent to [userID]:${petReportData.userId}`
+              );
+
               this.closeEvent();
             });
           } else {

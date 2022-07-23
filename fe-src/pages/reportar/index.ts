@@ -33,18 +33,18 @@ customElements.define(
           <h1>${editMode ? "Editar" : "Reportar"} mascota perdida</h1>
           <div>
             <label for="nombre"><h6>nombre</h6></label>
-            <input name="nombre" class="reportar__input-nombre nombre__input" placeholder=${
+            <input name="nombre" class="reportar__input-nombre nombre__input" value=${
               editMode ? cs.pet.name : ""
             }>
           </div>
           
-          <button type="button" class="dropzone-previews button" ></button>
-          <button type="button" id="my-dropzone" class="reportar__form-button-agregar-foto button">agregar/modificar foto</button>
+          <button type="button" class="dropzone-previews button"></button>
+          <button type="button" id="my-dropzone" class="reportar__form-button-agregar-foto button" >agregar/modificar foto</button>
           <div id="map" class="mapbox-map"></div>
           <div>
             <label for="q"><h6>ubicacion</h6></label>
             <div class="reportar__input-container">
-              <input name="location" class="location-value ubicacion__input" type="search" placeholder=${
+              <input name="location" class="location-value ubicacion__input" type="search" value=${
                 editMode ? cs.pet.location : ""
               }>
               <button type="button" class="reportar__form-button-location button">go</button>
@@ -122,9 +122,9 @@ customElements.define(
           const nombre = e.target.nombre.value as any;
           const location = e.target.location.value as any;
 
-          if (!nombre || !location) {
+          if (!nombre || !location || !data) {
             alert(
-              "tiene que ingresar un nombre y una direccion para continuar"
+              "tiene que ingresar un nombre, una foto y una direccion para continuar"
             );
           } else {
             let pet: object = {
@@ -133,7 +133,7 @@ customElements.define(
               longitud,
               url: data,
               location,
-              userId: cs.userId,
+              userId: cs.user.userId,
             };
 
             if (!editMode) {
@@ -143,7 +143,7 @@ customElements.define(
               Router.go("/mascotas");
             } else {
               const petRes = await state.modifyPet(pet);
-              console.log({ modified: petRes });
+              console.log(`pet has been successfully modified!`);
 
               Router.go("/mascotas");
             }

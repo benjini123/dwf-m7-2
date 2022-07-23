@@ -38,8 +38,10 @@ export function initNavbarComp() {
           align-items: center;
           justify-content: space-between;
           background-color: #FF6868;
-          position:relative;
+          position:fixed;
+          top:0;
           width:100%;
+          height:auto;
           padding:20px;
           color: white;
         }
@@ -93,6 +95,7 @@ export function initNavbarComp() {
         }
         
         .respmenu input:checked ~ nav {
+
           display: flex;
           flex-direction:column;
           height:100vh;
@@ -126,7 +129,7 @@ export function initNavbarComp() {
         nav ul{
           list-style: none;
           padding: 0;
-          margin: 0;
+          margin-top: 100px;
           height:100vh;
           display:flex;
           flex-direction: column;
@@ -143,15 +146,15 @@ export function initNavbarComp() {
             width:600px;
             height:50px;
             float:right;
-            padding-right:50px;
             color:black;
             gap:30px;
           }
         }
 
-        .link h6{
+        .nav__log-out h6{
           text-decoration:underline;
           color:#3737ec;
+          cursor:pointer;
         }
 
 
@@ -176,12 +179,28 @@ export function initNavbarComp() {
           const div = document.createElement("div");
           div.innerHTML = `
             
-            <h2 class="nav__user-email">${currentState.email}<h2>
-            <a class="link"><h6>cerrar sesion</h6></a>
+          <h2 class="nav__user-email">${currentState.user.email}<h2>
+          <a class="nav__log-out"><h6>cerrar sesion</h6></a>
   
-            `;
+          `;
+
+          const linkEl = div.querySelector(".nav__log-out") as any;
+          linkEl.addEventListener("click", (e) => {
+            // e.preventDefault();
+            state.setState({});
+            div.remove();
+          });
+
           sessionDiv.appendChild(div);
         }
+      }
+      listeners() {
+        const homeEl = this.shadow.querySelector(".header__opcioness") as any;
+        homeEl.addEventListener("click", (e) => {
+          e.preventDefault();
+          Router.go("/home");
+        });
+
         const opcionEl = [
           ...(this.shadow.querySelectorAll(".header__opciones") as any),
         ];
@@ -190,28 +209,23 @@ export function initNavbarComp() {
         opcionEl.forEach((item) => {
           item.addEventListener("click", (e: any) => {
             e.preventDefault();
-            e.stopPropagation();
+
+            const src = e.target.getAttribute("src");
 
             const currentState = state.getState();
-            currentState.src = e.target.getAttribute("src");
+            currentState.src = src;
             currentState.mode = "report";
             state.setState(currentState);
 
-            if (currentState.email && currentState.token) {
-              // if logged in
+            // if logged in
+            if (currentState.token) {
               Router.go(currentState.src);
-            } else {
               // if not logged in
+            } else {
               Router.go("/email");
             }
           });
         });
-      }
-
-      listeners() {
-        const sessionInfo = this.shadow.querySelector(
-          ".header__session-info"
-        ) as any;
       }
 
       render() {
@@ -232,7 +246,7 @@ export function initNavbarComp() {
                 </a>
               </li>
               <li>
-                <a class="header__opciones">
+                <a class="header__opcioness">
                   <h3 src="/home">mascotas cerca mio</h3>
                 </a>
               </li>

@@ -21,6 +21,7 @@ customElements.define(
         state
           .signIn(password)
           .then(() => {
+            console.log(`welcome! Succesfully signed in`);
             Router.go("/home");
           })
           .catch((error) => {
