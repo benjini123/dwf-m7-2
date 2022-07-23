@@ -315,6 +315,7 @@ div.mapboxgl-ctrl button.mapboxgl-ctrl-geolocate .mapboxgl-ctrl-icon{
 
 .email__form, .datos__form, .password__form{
 	margin: 20px;
+	margin-top: 120px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -436,7 +437,7 @@ div.mapboxgl-ctrl button.mapboxgl-ctrl-geolocate .mapboxgl-ctrl-icon{
 	gap: 20px;
 	width: 336px;
 	margin: auto
-}
+} 
 
 @media (max-width: 376px) {
 	#mascotas-section{
