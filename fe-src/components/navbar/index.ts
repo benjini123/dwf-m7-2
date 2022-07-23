@@ -58,6 +58,8 @@ export function initNavbarComp() {
 
         }
 
+        .header__opciones, .header__opcioness
+
         .respmenu .header__logo-vector{
           position: absolute;
           right: 20px;
