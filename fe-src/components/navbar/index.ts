@@ -58,7 +58,9 @@ export function initNavbarComp() {
 
         }
 
-        .header__opciones, .header__opcioness
+        .header__opciones, .header__opcioness{
+          cursor:pointer;
+        }
 
         .respmenu .header__logo-vector{
           position: absolute;
