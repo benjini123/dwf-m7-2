@@ -41,8 +41,9 @@ export async function createPet(pet) {
 
   return newMascota;
 }
+
 export async function updatePet(petObject, petId) {
-  const { nombre, latitud, longitud, url } = petObject;
+  const { nombre, latitud, longitud, url, location } = petObject;
 
   const imagen = await cloudinary.uploader.upload(url, {
     resource_type: "image",
@@ -56,7 +57,8 @@ export async function updatePet(petObject, petId) {
       name: nombre,
       lat: latitud,
       lng: longitud,
-      src: imagen.secure_url,
+      url: imagen.secure_url,
+      location,
     },
     {
       where: {
