@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import * as express from "express";
 import * as cors from "cors";
 import * as path from "path";
@@ -52,6 +51,7 @@ app.get("/users", async (req, res) => {
   res.json(users);
 });
 
+//Update user
 app.put("/user/update", reqBody, authMiddleware, async (req, res) => {
   const { name, password, email } = req.body;
   const updateRes = await updateUser(name, password, email);
@@ -122,8 +122,12 @@ app.get("/mascotas/:userId", async (req, res) => {
 //Get Pets near location
 app.get("/mascotas-cerca-de", async (req, res) => {
   const { lat, lng } = req.query;
-  const petsByLoc = await getGeoPets(lat, lng);
-  res.json(petsByLoc);
+  try {
+    const petsByLoc = await getGeoPets(lat, lng);
+    res.json(petsByLoc);
+  } catch (error) {
+    throw error.message;
+  }
 });
 
 //Delete Pet
@@ -136,7 +140,7 @@ app.delete("/mascotas/:petId", authMiddleware, async (req, res) => {
 });
 
 //Create Report
-app.post("/report", reqBody, async (req, res) => {
+app.post("/report", async (req, res) => {
   const reportadas = await createReport(req.body).catch((err) => {
     res.json(err.message);
   });

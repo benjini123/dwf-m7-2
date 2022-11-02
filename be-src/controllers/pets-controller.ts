@@ -4,7 +4,6 @@ import { cloudinary } from "../lib/cloudinary";
 
 export async function createPet(pet) {
   const { nombre, latitud, longitud, userId, url, location } = pet;
-  console.log(pet);
 
   const imagen = await cloudinary.uploader.upload(url, {
     resource_type: "image",
@@ -98,7 +97,9 @@ export async function getUserPets(userId) {
   });
   return mascotas;
 }
+
 export async function deletePet(petId) {
+  await index.deleteObject(petId);
   const mascotas = await Pet.destroy({
     where: { id: petId },
   });
