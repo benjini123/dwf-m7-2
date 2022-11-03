@@ -68,7 +68,7 @@ export async function updatePet(petObject, petId) {
 
   await index
     .partialUpdateObject({
-      objectId: editPet.length,
+      objectId: petId,
       name: nombre,
       url: imagen.secure_url,
       _geoloc: {
