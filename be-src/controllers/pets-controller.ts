@@ -75,6 +75,7 @@ export async function updatePet(petObject, petId) {
         lat: latitud,
         lng: longitud,
       },
+      location: location,
     })
     .catch((error) => {
       return error.message;
