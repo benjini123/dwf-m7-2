@@ -6,6 +6,7 @@ import * as bodyParser from "body-parser";
 
 import {
   createUser,
+  getAuth,
   getUser,
   getUsers,
   updateUser,
@@ -51,9 +52,16 @@ app.get("/users", async (req, res) => {
   res.json(users);
 });
 
+//Get users
+app.get("/auth", async (req, res) => {
+  const auth = await getAuth();
+  res.json(auth);
+});
+
 //Update user
 app.put("/user/update", reqBody, authMiddleware, async (req, res) => {
   const { name, password, email } = req.body;
+
   const updateRes = await updateUser(name, password, email);
   res.json(updateRes);
 });

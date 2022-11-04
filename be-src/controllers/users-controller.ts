@@ -30,7 +30,7 @@ export async function updateUser(name, password, email) {
   });
 
   await User.upsert({ id: user.get("id"), name });
-  await Auth.upsert({ userId: user.get("id"), password });
+  await Auth.upsert({ id: user.get("id"), password });
 
   return true;
 }
@@ -48,5 +48,10 @@ export async function getUser(email: string) {
 
 export async function getUsers() {
   const users = await User.findAll();
+  return users;
+}
+
+export async function getAuth() {
+  const users = await Auth.findAll();
   return users;
 }
