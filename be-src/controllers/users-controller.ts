@@ -29,11 +29,13 @@ export async function updateUser(name, password, email) {
     where: { email },
   });
 
-  await User.upsert({ id: user.get("id"), name });
-  await Auth.upsert({
-    userId: user.get("id"),
-    password: getSHA256ofString(password),
-  });
+  await User.update({ name }, { where: { id: user.get("id") } });
+  await Auth.update(
+    {
+      password: getSHA256ofString(password),
+    },
+    { where: { userId: user.get("id") } }
+  );
 
   return true;
 }
