@@ -30,7 +30,10 @@ export async function updateUser(name, password, email) {
   });
 
   await User.upsert({ id: user.get("id"), name });
-  await Auth.upsert({ id: user.get("id"), password });
+  await Auth.upsert({
+    id: user.get("id"),
+    password: getSHA256ofString(password),
+  });
 
   return true;
 }
