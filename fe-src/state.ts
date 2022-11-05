@@ -145,7 +145,7 @@ export const state = {
   async updateUser(name, password, email) {
     const cs = state.getState();
     const { token } = cs;
-    const updateRes = await fetch(API_BASE_URL + "/user/update", {
+    const updateRes = await fetch(API_BASE_URL + "/update/user", {
       method: "put",
       body: JSON.stringify({ name, password, email }),
       headers: {

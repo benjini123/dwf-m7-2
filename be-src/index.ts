@@ -59,7 +59,7 @@ app.get("/auth", async (req, res) => {
 });
 
 //Update user
-app.put("/user/update", reqBody, authMiddleware, async (req, res) => {
+app.put("/update/user", reqBody, authMiddleware, async (req, res) => {
   const { name, password, email } = req.body;
 
   const updateRes = await updateUser(name, password, email);
